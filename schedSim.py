@@ -1,35 +1,38 @@
 import argparse
-
+from pathlib import Path
 
 class Job:
-    run_time = None
-    arrival_time = None
-    job_num = None
 
-    # def __
+    def __init__(self, run_time, arrival_time, job_num):
+        self.run_time = run_time
+        self.arrival_time = arrival_time
+        self.job_num = job_num
+        self.execution_time = 0 # how long this job has been running for
+        self.wait_time = 0
+
+    def __str__(self):
+        return (f"Job Number: {self.job_num}\n"
+                f"  Arrival time: {self.arrival_time}\n  Run time: {self.run_time}\n  Execution time: {self.execution_time}")
 
 class Scheduler:
-    jobs = None
-    algorithm = None
-    quantum = None
-
-    def __init__(self, filename, algorithm, quantum):
+    def __init__(self, filename, algorithm = "FIFO", quantum = 1):
         try:
             with open(filename, "r") as jobs_file:
-                lines = jobs_file.readlines()
-                self.jobs = [self.line_to_tuple(line, index) for index, line in enumerate(lines)]
+                self.jobs = []
+                job_num = 0
+                for line in jobs_file:
+                    line = line.split()
+                    job = Job(int(line[0]), int(line[1]), job_num)
+                    self.jobs.append(job)
         except:
-            print("Error opening specified file.")
+            print(f"Error opening {filename}.")
             exit()
 
         self.algorithm = self.check_algorithm(algorithm)
-        if quantum == None:
-            self.quantum = 1
-        else:
-            self.quantum = quantum
+        self.quantum = quantum
 
     def __str__(self):
-        return "Jobs: " + str(self.jobs) + "\nAlgorithm: " + self.algorithm  + "\nQuantum: " + str(self.quantum)
+        return f"Jobs: {self.jobs} \nAlgorithm: {self.algorithm} \nQuantum: {self.quantum}"
 
     def assign_job_number(self):
         self.jobs.sort(key=(lambda x: x[1]))
@@ -38,28 +41,24 @@ class Scheduler:
             job = list(job)
             job.append(i)
 
-
-
-
-
-    def check_algorithm(self, algo):
-        if algo == "SRTN" or algo == "RR":
-            return algo
-        return "FIFO"
-    
-    def line_to_tuple(self, line, index):
-        split = line.split()
-        split = [int(num) for num in split]
-        split.append(index)
-        return tuple(split)
+    def check_algorithm(self, alg):
+        if alg == "SRTN":
+            return self.SRTN 
+        elif alg == "RR":
+            return self.RR
+        return self.FIFO
 
     def start(self):
-        if self.algorithm == "FIFO":
-            self.FIFO()
-        if self.algorithm == "SRTN":
-            self.SRTN()
-        if self.algorithm == "RR":
-            self.RR()
+        # pseudocode:
+        # time = 0
+        # while (jobs in job list):
+        #    job = self.alg() # get next job
+        #    job.execution_time += 1
+        #       if job.execution_time > job.run_time:
+        #       remove job from job list
+        #       job waiting time = current time - execution time - run time
+        # then, print the results
+        pass
 
     def FIFO(self):
         print("schedSim: Using FIFO algorithm.")
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Scheduling simulator for CPE 453 Lab 2'
     )
-    parser.add_argument('jobs_file', type=str,
+    parser.add_argument('jobs_file', type=Path,
                         help="path to .txt file containing list of jobs")
     parser.add_argument('-p', dest='alg', type=str, default="FIFO",
                         help='scheduling algorithm (options: STRN, FIFO, RR)')
@@ -86,6 +85,8 @@ if __name__ == "__main__":
     
     scheduler = Scheduler(args.jobs_file, args.alg, args.q)
     print(scheduler)
+    # for job in scheduler.jobs:
+    #     print(job)
 
     print("schedSim: Starting Scheduling Simulator")
     scheduler.start()
