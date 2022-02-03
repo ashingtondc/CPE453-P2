@@ -1,11 +1,12 @@
-import sys
+import argparse
+
 
 class Job:
     run_time = None
     arrival_time = None
     job_num = None
 
-    def __
+    # def __
 
 class Scheduler:
     jobs = None
@@ -21,7 +22,6 @@ class Scheduler:
             print("Error opening specified file.")
             exit()
 
-        
         self.algorithm = self.check_algorithm(algorithm)
         if quantum == None:
             self.quantum = 1
@@ -73,45 +73,18 @@ class Scheduler:
         pass
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or len(sys.argv) > 6:
-        print("schedSim: Invalid number of arguments. Exiting.")
-        exit()
-    job_filename = None
-    algorithm = None
-    quantum = None
-    try:
-        for i in range(1, len(sys.argv)):
-            if i == 1:
-                job_filename = sys.argv[i]
-            if i == 2:
-                if sys.argv[i] != "-p" and sys.argv[i] != "-q":
-                    raise Exception("Bad argument")
-            if i == 3:
-                if sys.argv[2] == "-p":
-                    if algorithm is not None:
-                        raise Exception("Repeated argument")
-                    algorithm = sys.argv[i]
-                if sys.argv[2] == "-q":
-                    if quantum is not None:
-                        raise Exception("Repeated argument")
-                    quantum = int(sys.argv[i])
-            if i == 4:
-                if sys.argv[i] != "-p" and sys.argv[i] != "-q":
-                    raise Exception("Bad argument")
-            if i == 5:
-                if sys.argv[4] == "-p":
-                    if algorithm is not None:
-                        raise Exception("Repeated argument")
-                    algorithm = sys.argv[i]
-                if sys.argv[4] == "-q":
-                    if quantum is not None:
-                        raise Exception("Repeated argument")
-                    quantum = int(sys.argv[i])
-    except:
-        print("schedSim: Invalid arguments. Exiting.")
-        exit()
+    parser = argparse.ArgumentParser(
+        description='Scheduling simulator for CPE 453 Lab 2'
+    )
+    parser.add_argument('jobs_file', type=str,
+                        help="path to .txt file containing list of jobs")
+    parser.add_argument('-p', dest='alg', type=str, default="FIFO",
+                        help='scheduling algorithm (options: STRN, FIFO, RR)')
+    parser.add_argument('-q', dest='q', type=int, default=1,
+                        help='time quantum (only used for RR scheduling)')
+    args = parser.parse_args()
     
-    scheduler = Scheduler(job_filename, algorithm, quantum)
+    scheduler = Scheduler(args.jobs_file, args.alg, args.q)
     print(scheduler)
 
     print("schedSim: Starting Scheduling Simulator")
