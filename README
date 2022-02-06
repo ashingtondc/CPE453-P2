@@ -1,0 +1,20 @@
+Names: Ash Parasa & Remy Wolf
+Special Instructions: 
+Written in Python, so run as python3 schedSim.py [args]
+Or, run make and run ./schedSim [args] (Not supported on Windows)
+
+Questions:
+
+1. For what types of workloads does SRTN deliver the same turnaround times as FIFO?
+When each job has the same burst time, SRTN will deliver the same turnaround times as FIFO. 
+
+2. For what types of workloads and quantum lengths does SRTN deliver the same response times as RR?
+For workloads with jobs with varying burst times, low quantum lengths will deliver the same response times as SRTN. 
+
+3. What happens to response time with SRTN as job lengths increase? Can you use the simulator to demonstrate the trend?
+Based on what the simulator shows, response times increase a lot when every job's length is increased, since each job has to wait
+for the jobs before to complete before being started and "responding."
+
+4. What happens to response time with RR as quantum lengths increase? Can you write an equation that gives the worst-case response time, given N jobs?
+Response times increase as quantum lengths increase. The final job in the queue will have to wait for each job before it to go through its allocated quantum
+before it can respond. The equation looks like Response_time = (N-1)*Q. 
