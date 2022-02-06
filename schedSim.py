@@ -58,16 +58,18 @@ class Scheduler:
                 self.running_jobs.append(self.ready_jobs.pop(0))
             # see if there is a job to be run
             job_index = self.algorithm()
+            time += 1
+
             if job_index >= 0: 
                 job = self.running_jobs[job_index]
+                job.execution_time += 1
                 # see if this job has completed
                 if job.execution_time >= job.run_time:
                     self.finished_jobs.append(self.running_jobs.pop(job_index))
                     job.waiting_time = time - job.execution_time - job.arrival_time
                 # if not, execute it for one unit of time
-                else:
-                    job.execution_time += 1            
-            time += 1
+                # else:
+                                
 
         self.print_results()
 
@@ -96,7 +98,10 @@ class Scheduler:
     
 
     def SRTN(self):
-        pass
+        if len(self.running_jobs) > 0:
+            self.running_jobs.sort(key=(lambda x: x.run_time - x.execution_time))
+            return 0
+        return -1
 
 
     def RR(self):
