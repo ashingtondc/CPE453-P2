@@ -33,6 +33,7 @@ class Scheduler:
 
         self.algorithm = self.check_algorithm(algorithm)
         self.quantum = quantum
+        self.rr_counter = quantum
         self.running_jobs = []
         self.finished_jobs = []
 
@@ -67,6 +68,8 @@ class Scheduler:
                 if job.execution_time >= job.run_time:
                     self.finished_jobs.append(self.running_jobs.pop(job_index))
                     job.waiting_time = time - job.execution_time - job.arrival_time
+                    # for round robin; ensures that the next job in line does not miss its turn
+                    self.rr_counter = self.quantum
                 # if not, execute it for one unit of time
                 # else:
                                 
@@ -98,6 +101,7 @@ class Scheduler:
     
 
     def SRTN(self):
+        # Sort by shortest remaining time so job at index 0 has the shortest rem time
         if len(self.running_jobs) > 0:
             self.running_jobs.sort(key=(lambda x: x.run_time - x.execution_time))
             return 0
@@ -105,7 +109,18 @@ class Scheduler:
 
 
     def RR(self):
-        pass
+        # Using a counter to keep track of round robin exec time (resets after quantum # of units)
+        # Counter starts with same value as quantum
+        # If counter is 0, shift queue down, set counter to quantum
+        # Counter is reset when a job finishes in start() to treat each job fairly
+        if len(self.running_jobs) > 0:
+            if self.rr_counter == 0:
+                head = self.running_jobs.pop(0)
+                self.running_jobs.append(head)
+                self.rr_counter = self.quantum
+            self.rr_counter -= 1
+            return 0
+        return -1
 
 
 if __name__ == "__main__":
