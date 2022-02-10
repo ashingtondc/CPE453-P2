@@ -31,6 +31,7 @@ class Scheduler:
             print(f"Error opening {filename}.")
             exit()
 
+        # self.ready_jobs.sort(key = lambda j: (j.arrival_time, j.job_num))
         self.algorithm = self.check_algorithm(algorithm)
         self.quantum = quantum
         self.rr_counter = quantum
@@ -51,7 +52,6 @@ class Scheduler:
 
 
     def start(self):
-        # pseudocode:
         time = 0
         while len(self.ready_jobs) > 0 or len(self.running_jobs) > 0:
             # see if any jobs need to be scheduled
@@ -71,9 +71,7 @@ class Scheduler:
                     # for round robin; ensures that the next job in line does not miss its turn
                     self.rr_counter = self.quantum
                 # if not, execute it for one unit of time
-                # else:
                                 
-
         self.print_results()
 
 
@@ -81,6 +79,7 @@ class Scheduler:
         avg_wait = 0
         avg_turnaround = 0
 
+        self.finished_jobs.sort(key = lambda j: j.job_num)
         for job in self.finished_jobs:
             avg_wait += job.waiting_time
             turnaround = job.waiting_time + job.execution_time
@@ -136,10 +135,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     scheduler = Scheduler(args.jobs_file, args.alg, args.q)
-    # print(scheduler)
-    # for job in scheduler.ready_jobs:
-    #     print(job)
 
-    print("schedSim: Starting Scheduling Simulator")
+    # print("schedSim: Starting Scheduling Simulator")
     scheduler.start()
     
